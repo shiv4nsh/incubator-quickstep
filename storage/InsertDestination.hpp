@@ -143,12 +143,11 @@ class InsertDestination : public InsertDestinationInterface {
 
   void insertTupleInBatch(const Tuple &tuple) override;
 
-  void bulkInsertTuples(ValueAccessor *accessor, bool always_mark_full = false) override;
+  void bulkInsertTuples(ValueAccessor *accessor) override;
 
   void bulkInsertTuplesWithRemappedAttributes(
       const std::vector<attribute_id> &attribute_map,
-      ValueAccessor *accessor,
-      bool always_mark_full = false) override;
+      ValueAccessor *accessor) override;
 
   void insertTuplesFromVector(std::vector<Tuple>::const_iterator begin,
                               std::vector<Tuple>::const_iterator end) override;
@@ -466,12 +465,11 @@ class PartitionAwareInsertDestination : public InsertDestination {
 
   void insertTupleInBatch(const Tuple &tuple) override;
 
-  void bulkInsertTuples(ValueAccessor *accessor, bool always_mark_full = false) override;
+  void bulkInsertTuples(ValueAccessor *accessor) override;
 
   void bulkInsertTuplesWithRemappedAttributes(
       const std::vector<attribute_id> &attribute_map,
-      ValueAccessor *accessor,
-      bool always_mark_full = false) override;
+      ValueAccessor *accessor) override;
 
   void insertTuplesFromVector(std::vector<Tuple>::const_iterator begin,
                               std::vector<Tuple>::const_iterator end) override;

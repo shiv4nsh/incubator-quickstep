@@ -189,7 +189,7 @@ void InsertDestination::insertTupleInBatch(const Tuple &tuple) {
   returnBlock(std::move(output_block), false);
 }
 
-void InsertDestination::bulkInsertTuples(ValueAccessor *accessor, bool always_mark_full) {
+void InsertDestination::bulkInsertTuples(ValueAccessor *accessor) {
   InvokeOnAnyValueAccessor(
       accessor,
       [&](auto *accessor) -> void {  // NOLINT(build/c++11)
@@ -204,7 +204,7 @@ void InsertDestination::bulkInsertTuples(ValueAccessor *accessor, bool always_ma
         // Bulk insert into output_block was successful. output_block
         // will be rebuilt when there won't be any more insertions to it.
         this->returnBlock(std::move(output_block),
-                          always_mark_full || !accessor->iterationFinished());
+                          !accessor->iterationFinished());
       }
     }
   });
@@ -212,8 +212,7 @@ void InsertDestination::bulkInsertTuples(ValueAccessor *accessor, bool always_ma
 
 void InsertDestination::bulkInsertTuplesWithRemappedAttributes(
     const std::vector<attribute_id> &attribute_map,
-    ValueAccessor *accessor,
-    bool always_mark_full) {
+    ValueAccessor *accessor) {
   InvokeOnAnyValueAccessor(
       accessor,
       [&](auto *accessor) -> void {  // NOLINT(build/c++11)
@@ -230,7 +229,7 @@ void InsertDestination::bulkInsertTuplesWithRemappedAttributes(
         // Bulk insert into output_block was successful. output_block
         // will be rebuilt when there won't be any more insertions to it.
         this->returnBlock(std::move(output_block),
-                          always_mark_full || !accessor->iterationFinished());
+                          !accessor->iterationFinished());
       }
     }
   });
@@ -466,7 +465,7 @@ void PartitionAwareInsertDestination::insertTupleInBatch(const Tuple &tuple) {
   returnBlockInPartition(std::move(output_block), false, part_id);
 }
 
-void PartitionAwareInsertDestination::bulkInsertTuples(ValueAccessor *accessor, bool always_mark_full) {
+void PartitionAwareInsertDestination::bulkInsertTuples(ValueAccessor *accessor) {
   const std::size_t num_partitions = partition_scheme_header_->getNumPartitions();
   const attribute_id partition_attribute_id = partition_scheme_header_->getPartitionAttributeId();
 
@@ -474,7 +473,6 @@ void PartitionAwareInsertDestination::bulkInsertTuples(ValueAccessor *accessor, 
       accessor,
       [this,
        &partition_attribute_id,
-       &always_mark_full,
        &num_partitions](auto *accessor) -> void {  // NOLINT(build/c++11)
     std::vector<std::unique_ptr<TupleIdSequence>> partition_membership;
     partition_membership.resize(num_partitions);
@@ -513,7 +511,7 @@ void PartitionAwareInsertDestination::bulkInsertTuples(ValueAccessor *accessor, 
           // Bulk insert into output_block was successful. output_block
           // will be rebuilt when there won't be any more insertions to it.
           this->returnBlockInPartition(std::move(output_block),
-                                       always_mark_full || !adapter[partition]->iterationFinished(),
+                                       !adapter[partition]->iterationFinished(),
                                        partition);
         }
       }
@@ -522,7 +520,7 @@ void PartitionAwareInsertDestination::bulkInsertTuples(ValueAccessor *accessor, 
 }
 
 void PartitionAwareInsertDestination::bulkInsertTuplesWithRemappedAttributes(
-    const std::vector<attribute_id> &attribute_map, ValueAccessor *accessor, bool always_mark_full) {
+    const std::vector<attribute_id> &attribute_map, ValueAccessor *accessor) {
   const std::size_t num_partitions = partition_scheme_header_->getNumPartitions();
   const attribute_id partition_attribute_id = partition_scheme_header_->getPartitionAttributeId();
 
@@ -531,7 +529,6 @@ void PartitionAwareInsertDestination::bulkInsertTuplesWithRemappedAttributes(
       [this,
        &partition_attribute_id,
        &attribute_map,
-       &always_mark_full,
        &num_partitions](auto *accessor) -> void {  // NOLINT(build/c++11)
     std::vector<std::unique_ptr<TupleIdSequence>> partition_membership;
     partition_membership.resize(num_partitions);
@@ -570,7 +567,7 @@ void PartitionAwareInsertDestination::bulkInsertTuplesWithRemappedAttributes(
           // Bulk insert into output_block was successful. output_block
           // will be rebuilt when there won't be any more insertions to it.
           this->returnBlockInPartition(std::move(output_block),
-                                       always_mark_full || !adapter[partition]->iterationFinished(),
+                                       !adapter[partition]->iterationFinished(),
                                        partition);
         }
       }
