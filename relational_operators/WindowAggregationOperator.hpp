@@ -38,6 +38,7 @@ namespace tmb { class MessageBus; }
 namespace quickstep {
 
 class StorageManager;
+class WindowAggregationOperationState;
 class WorkOrderProtosContainer;
 class WorkOrdersContainer;
 
@@ -59,9 +60,13 @@ class WindowAggregationOperator : public RelationalOperator {
    * @param input_relation The relation to perform aggregation over.
    **/
   WindowAggregationOperator(const std::size_t query_id,
-                            const CatalogRelation &input_relation)
+                            const CatalogRelation &output_relation,
+                            const QueryContext::window_aggregation_state_id window_aggregation_state_index,
+                            const QueryContext::insert_destination_id output_destination_index)
       : RelationalOperator(query_id),
-        input_relation_(input_relation),
+        output_relation_(output_relation),
+        window_aggregation_state_index_(window_aggregation_state_index),
+        output_destination_index_(output_destination_index),
         generated_(false) {}
 
   ~WindowAggregationOperator() override {}
@@ -82,7 +87,9 @@ class WindowAggregationOperator : public RelationalOperator {
    **/
   serialization::WorkOrder* createWorkOrderProto();
 
-  const CatalogRelation &input_relation_;
+  const CatalogRelation &output_relation_;
+  const QueryContext::window_aggregation_state_id window_aggregation_state_index_;
+  const QueryContext::insert_destination_id output_destination_index_;
   bool generated_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowAggregationOperator);
@@ -100,16 +107,19 @@ class WindowAggregationWorkOrder : public WorkOrder {
    * @param input_block_id The block id.
    **/
   WindowAggregationWorkOrder(const std::size_t query_id,
-                             const CatalogRelation &input_relation)
+                             WindowAggregationOperationState *state,
+                             InsertDestination *output_destination)
       : WorkOrder(query_id),
-        input_relation_(input_relation)  {}
+        state_(state),
+        output_destination_(output_destination)  {}
 
   ~WindowAggregationWorkOrder() override {}
 
   void execute() override;
 
  private:
-  const CatalogRelation &input_relation_;
+  WindowAggregationOperationState *state_;
+  InsertDestination *output_destination_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowAggregationWorkOrder);
 };

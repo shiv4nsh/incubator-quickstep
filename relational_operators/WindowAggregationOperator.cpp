@@ -38,34 +38,38 @@ bool WindowAggregationOperator::getAllWorkOrders(
     StorageManager *storage_manager,
     const tmb::client_id scheduler_client_id,
     tmb::MessageBus *bus) {
-  if (!generated_) {
+  DCHECK(query_context != nullptr);
+  
+  if (blocking_dependencies_met_ && !generated_) {
     container->addNormalWorkOrder(
-        new WindowAggregationWorkOrder(query_id_, input_relation_), op_index_);
+        new WindowAggregationWorkOrder(
+            query_id_,
+            query_context->releaseWindowAggregationState(window_aggregation_state_index_),
+            query_context->getInsertDestination(output_destination_index_)),
+        op_index_);
     generated_ = true;
   }
 
-  return true;
+  return generated_;
 }
 
 bool WindowAggregationOperator::getAllWorkOrderProtos(WorkOrderProtosContainer *container) {
-  if (!generated_) {
+  if (blocking_dependencies_met_ && !generated_) {
     container->addWorkOrderProto(createWorkOrderProto(), op_index_);
     generated_ = true;
   }
 
-  return true;
+  return generated_;
 }
 
 serialization::WorkOrder* WindowAggregationOperator::createWorkOrderProto() {
   serialization::WorkOrder *proto = new serialization::WorkOrder;
   proto->set_work_order_type(serialization::WINDOW_AGGREGATION);
   proto->set_query_id(query_id_);
-
-  std::vector<block_id> relation_blocks(input_relation_.getBlocksSnapshot());
-  for (const block_id relation_block : relation_blocks) {
-    proto->AddExtension(serialization::WindowAggregationWorkOrder::block_ids,
-                        relation_block);
-  }
+  proto->SetExtension(serialization::WindowAggregationWorkOrder::window_aggr_state_index,
+                      window_aggregation_state_index_);
+  proto->SetExtension(serialization::WindowAggregationWorkOrder::insert_destination_index,
+                      output_destination_index_);
 
   return proto;
 }
