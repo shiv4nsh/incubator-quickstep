@@ -1667,6 +1667,18 @@ target_link_libraries(StorageManager_unittest
                       quickstep_storage_StorageBlockInfo
                       quickstep_storage_StorageManager
                       quickstep_utility_ShardedLockManager)
+
+add_executable(WindowAggregationOperationState_unittest
+               "${CMAKE_CURRENT_SOURCE_DIR}/tests/WindowAggregationOperationState_unittest.cpp")
+target_link_libraries(WindowAggregationOperationState_unittest
+                      gtest
+                      gtest_main
+                      quickstep_catalog_CatalogDatabase
+                      quickstep_catalog_CatalogRelation
+                      quickstep_catalog_CatalogTypedefs
+                      quickstep_storage_WindowAggregationOperationState
+                      quickstep_storage_WindowAggregationOperationState_proto
+                      ${LIBS})
 if (QUICKSTEP_HAVE_LIBNUMA)
   target_link_libraries(StorageManager_unittest
                         ${LIBNUMA_LIBRARY})
