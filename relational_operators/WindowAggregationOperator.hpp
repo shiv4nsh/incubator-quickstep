@@ -58,6 +58,10 @@ class WindowAggregationOperator : public RelationalOperator {
    *
    * @param query_id The ID of this query.
    * @param input_relation The relation to perform aggregation over.
+   * @param window_aggregation_state_index The index of WindowAggregationState
+   *                                       in QueryContext.
+   * @param output_destination_index The index of InsertDestination in
+   *                                 QueryContext for the output.
    **/
   WindowAggregationOperator(const std::size_t query_id,
                             const CatalogRelation &output_relation,
@@ -112,7 +116,8 @@ class WindowAggregationWorkOrder : public WorkOrder {
    * @brief Constructor
    *
    * @param query_id The ID of this query.
-   * @param input_block_id The block id.
+   * @param state The WindowAggregationOperatorState to use.
+   * @param output_destination The InsertDestination for output.
    **/
   WindowAggregationWorkOrder(const std::size_t query_id,
                              WindowAggregationOperationState *state,

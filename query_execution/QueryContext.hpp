@@ -482,10 +482,11 @@ class QueryContext {
    *
    * @param id The WindowAggregationOperationState id in the query.
    *
-   * @return The WindowAggregationOperationState, alreadly created in the
+   * @return The WindowAggregationOperationState, already created in the
    *         constructor.
    **/
-  inline WindowAggregationOperationState* getWindowAggregationState(const window_aggregation_state_id id) {
+  inline WindowAggregationOperationState* getWindowAggregationState(
+      const window_aggregation_state_id id) {
     DCHECK_LT(id, window_aggregation_states_.size());
     DCHECK(window_aggregation_states_[id]);
     return window_aggregation_states_[id].get();
@@ -496,10 +497,11 @@ class QueryContext {
    *
    * @param id The id of the WindowAggregationOperationState to destroy.
    *
-   * @return The WindowAggregationOperationState, alreadly created in the
+   * @return The WindowAggregationOperationState, already created in the
    *         constructor.
    **/
-  inline WindowAggregationOperationState* releaseWindowAggregationState(const window_aggregation_state_id id) {
+  inline WindowAggregationOperationState* releaseWindowAggregationState(
+      const window_aggregation_state_id id) {
     DCHECK_LT(id, window_aggregation_states_.size());
     DCHECK(window_aggregation_states_[id]);
     return window_aggregation_states_[id].release();
