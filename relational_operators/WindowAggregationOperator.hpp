@@ -79,6 +79,14 @@ class WindowAggregationOperator : public RelationalOperator {
 
   bool getAllWorkOrderProtos(WorkOrderProtosContainer *container) override;
 
+  const relation_id getOutputRelationID() const override {
+    return output_relation_.getID();
+  }
+
+  QueryContext::insert_destination_id getInsertDestinationID() const override {
+    return output_destination_index_;
+  }
+
  private:
   /**
    * @brief Create Work Order proto.

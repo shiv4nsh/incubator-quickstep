@@ -346,7 +346,7 @@ class ExecutionGenerator {
    * @param physical_plan The TableGenerator to be converted.
    */
   void convertTableGenerator(const physical::TableGeneratorPtr &physical_plan);
-  
+
   /**
    * @brief Converts a physical WindowAggregate to a WindowAggregation operator.
    *

@@ -1642,7 +1642,7 @@ void ExecutionGenerator::convertTableGenerator(
 }
 
 void ExecutionGenerator::convertWindowAggregate(
-    const P::WindowAggregatePtr &physical_window_aggregate) {
+    const P::WindowAggregatePtr &physical_plan) {
   // Create window_aggregation_operation_state proto.
   const QueryContext::window_aggregation_state_id window_aggr_state_index =
       query_context_proto_->window_aggregation_states_size();
@@ -1651,12 +1651,12 @@ void ExecutionGenerator::convertWindowAggregate(
 
   // Get input.
   const CatalogRelationInfo *input_relation_info =
-      findRelationInfoOutputByPhysical(physical_window_aggregate->input());
+      findRelationInfoOutputByPhysical(physical_plan->input());
   window_aggr_state_proto->set_relation_id(input_relation_info->relation->getID());
 
   // Get window aggregate function expression.
   const E::AliasPtr &named_window_aggregate_expression =
-      physical_window_aggregate->window_aggregate_expression();
+      physical_plan->window_aggregate_expression();
   const E::WindowAggregateFunctionPtr &window_aggregate_function =
       std::static_pointer_cast<const E::WindowAggregateFunction>(
           named_window_aggregate_expression->expression());
@@ -1707,7 +1707,7 @@ void ExecutionGenerator::convertWindowAggregate(
   const QueryContext::insert_destination_id insert_destination_index =
       query_context_proto_->insert_destinations_size();
   S::InsertDestination *insert_destination_proto = query_context_proto_->add_insert_destinations();
-  createTemporaryCatalogRelation(physical_window_aggregate,
+  createTemporaryCatalogRelation(physical_plan,
                                  &output_relation,
                                  insert_destination_proto);
 
@@ -1731,7 +1731,7 @@ void ExecutionGenerator::convertWindowAggregate(
   // Add to map and temp_relation_info_vec.
   physical_to_output_relation_map_.emplace(
       std::piecewise_construct,
-      std::forward_as_tuple(physical_window_aggregate),
+      std::forward_as_tuple(physical_plan),
       std::forward_as_tuple(window_aggregation_operator_index, output_relation));
   temporary_relation_info_vec_.emplace_back(window_aggregation_operator_index,
                                             output_relation);

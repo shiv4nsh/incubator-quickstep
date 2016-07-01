@@ -122,7 +122,7 @@ class WindowAggregationOperationState {
   const bool is_row_;
   const std::int64_t num_preceding_;
   const std::int64_t num_following_;
-  
+
   StorageManager *storage_manager_;
 
 #ifdef QUICKSTEP_ENABLE_VECTOR_COPY_ELISION_SELECTION

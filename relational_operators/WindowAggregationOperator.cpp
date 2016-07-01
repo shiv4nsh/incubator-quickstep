@@ -26,7 +26,6 @@
 #include "query_execution/WorkOrdersContainer.hpp"
 #include "relational_operators/WorkOrder.pb.h"
 #include "storage/StorageBlockInfo.hpp"
-#include "utility/SqlError.hpp"
 
 #include "tmb/id_typedefs.h"
 
@@ -39,7 +38,7 @@ bool WindowAggregationOperator::getAllWorkOrders(
     const tmb::client_id scheduler_client_id,
     tmb::MessageBus *bus) {
   DCHECK(query_context != nullptr);
-  
+
   if (blocking_dependencies_met_ && !generated_) {
     container->addNormalWorkOrder(
         new WindowAggregationWorkOrder(
@@ -76,8 +75,8 @@ serialization::WorkOrder* WindowAggregationOperator::createWorkOrderProto() {
 
 
 void WindowAggregationWorkOrder::execute() {
-  THROW_SQL_ERROR()
-      << "Window aggregate function is not supported yet :(";
+  std::cout << "Window aggregation is not supported yet.\n"
+      << "An empty table is returned\n";
 }
 
 }  // namespace quickstep

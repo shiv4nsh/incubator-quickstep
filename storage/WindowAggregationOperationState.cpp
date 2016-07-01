@@ -172,7 +172,7 @@ bool WindowAggregationOperationState::ProtoIsValid(const serialization::WindowAg
   if (proto.num_preceding() < -1 || proto.num_following() < -1) {
     return false;
   }
-  
+
   return true;
 }
 

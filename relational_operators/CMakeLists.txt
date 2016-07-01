@@ -435,7 +435,6 @@ target_link_libraries(quickstep_relationaloperators_WindowAggregationOperator
                       quickstep_relationaloperators_WorkOrder_proto
                       quickstep_storage_StorageBlockInfo
                       quickstep_utility_Macros
-                      quickstep_utility_SqlError
                       tmb)                      
 target_link_libraries(quickstep_relationaloperators_WorkOrder
                       glog
