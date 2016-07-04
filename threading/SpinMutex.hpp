@@ -42,6 +42,8 @@ class SpinMutex {
   SpinMutex() : locked_(false) {
   }
 
+  explicit SpinMutex(uint8_t *ptr): locked_(*ptr) {}
+
   /**
    * @note This call does NOT yield when contended. SpinMutex is intended
    *       mainly for cases where locks are held briefly and it is better to
